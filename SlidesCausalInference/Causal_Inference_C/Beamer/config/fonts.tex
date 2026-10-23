@@ -1,0 +1,19 @@
+% 字体语义集中定义，避免在每一页手动设置字号与字重。
+\ifPDFTeX
+  \usefonttheme{professionalfonts}
+\else
+  \IfFontExistsTF{TeX Gyre Heros}{
+    \setsansfont{TeX Gyre Heros}
+  }{
+    \setsansfont{Latin Modern Sans}
+  }
+  % TeX Gyre Cursor 随常见 TeX Live 安装提供，适合作为可移植的代码字体。
+  \setmonofont{TeX Gyre Cursor}
+\fi
+
+\newcommand{\TitleFont}{\fontsize{25}{30}\selectfont\bfseries}
+\newcommand{\SubtitleFont}{\large}
+\newcommand{\FrameTitleFont}{\large\bfseries}
+\newcommand{\BodyFont}{\normalsize}
+\newcommand{\SmallFont}{\small}
+\newcommand{\CodeFont}{\ttfamily\small}
