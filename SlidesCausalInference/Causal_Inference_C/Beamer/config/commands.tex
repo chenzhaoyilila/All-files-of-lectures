@@ -1,0 +1,58 @@
+% 内容组件：信息框、强调命令、代码样式与常用数学命令。
+\tcbset{
+  coursebox/.style={
+    enhanced,
+    boxrule=0pt,
+    leftrule=2.5pt,
+    arc=1pt,
+    outer arc=1pt,
+    left=7pt,right=7pt,top=6pt,bottom=6pt,
+    fonttitle=\bfseries,
+    before skip=6pt,after skip=6pt
+  }
+}
+
+\newtcolorbox{definitionbox}[1][Definition]{
+  coursebox,title=#1,colback=PrimaryLight,colframe=Primary,coltitle=Primary
+}
+\newtcolorbox{theorembox}[1][Theorem]{
+  coursebox,title=#1,colback=PrimaryLight,colframe=Primary,coltitle=Primary
+}
+\newtcolorbox{proofbox}[1][Proof idea]{
+  coursebox,title=#1,colback=SuccessLight,colframe=Success,coltitle=Success
+}
+\newtcolorbox{remarkbox}[1][Remark]{
+  coursebox,title=#1,colback=CodeBackground,colframe=MutedText,coltitle=Text
+}
+\newtcolorbox{warningbox}[1][Warning]{
+  coursebox,title=#1,colback=AccentLight,colframe=Accent,coltitle=Accent
+}
+\newtcolorbox{importantbox}[1][Important]{
+  coursebox,title=#1,colback=AccentLight,colframe=Accent,coltitle=Accent
+}
+
+\newcommand{\keyterm}[1]{\textcolor{Primary}{\textbf{#1}}}
+\newcommand{\coursecheck}{\textcolor{Success}{\ensuremath{\checkmark}}}
+
+\lstdefinestyle{coursecode}{
+  basicstyle=\CodeFont,
+  backgroundcolor=\color{CodeBackground},
+  keywordstyle=\color{Primary}\bfseries,
+  commentstyle=\color{Success},
+  stringstyle=\color{Accent},
+  numbers=left,
+  numberstyle=\tiny\color{MutedText},
+  numbersep=8pt,
+  frame=single,
+  rulecolor=\color{RuleColor},
+  framesep=7pt,
+  showstringspaces=false,
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  tabsize=2
+}
+\lstset{style=coursecode}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}

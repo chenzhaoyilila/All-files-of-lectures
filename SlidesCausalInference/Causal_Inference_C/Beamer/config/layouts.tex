@@ -1,0 +1,33 @@
+% 页面级语义环境。正文优先使用这些环境，而不是直接使用 frame。
+\newenvironment{titleframe}
+  {\begin{frame}[plain,noframenumbering]\titlepage}
+  {\end{frame}}
+
+\newenvironment{outlineframe}[1][Outline]
+  {\begin{frame}{#1}\tableofcontents[currentsection,hideothersubsections]}
+  {\end{frame}}
+
+\newenvironment{theoryframe}[1]
+  {\begin{frame}{#1}}
+  {\end{frame}}
+
+\newenvironment{exampleframe}[1]
+  {\begin{frame}{#1}}
+  {\end{frame}}
+
+\newenvironment{figureframe}[1]
+  {\begin{frame}{#1}\centering}
+  {\end{frame}}
+
+% fragile 页面必须通过 environment=codeframe 告知 Beamer 外层环境名。
+\newenvironment{codeframe}[1]
+  {\begin{frame}[fragile,environment=codeframe]{#1}}
+  {\end{frame}}
+
+\newenvironment{summaryframe}[1][Summary]
+  {\begin{frame}{#1}}
+  {\end{frame}}
+
+\newcommand{\figurecaption}[1]{%
+  \par\vspace{0.35cm}{\small\color{MutedText}#1\par}%
+}

@@ -1,0 +1,78 @@
+% Beamer 外观：白底、蓝色主色、无导航按钮、极简页脚。
+\mode<presentation>
+
+\useinnertheme{rectangles}
+\usefonttheme{professionalfonts}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+\setbeamersize{text margin left=0.75cm,text margin right=0.75cm}
+
+\setbeamercolor{normal text}{fg=Text,bg=Background}
+\setbeamercolor{structure}{fg=Primary}
+\setbeamercolor{alerted text}{fg=Accent}
+\setbeamercolor{frametitle}{fg=Primary,bg=Background}
+\setbeamercolor{title}{fg=Primary}
+\setbeamercolor{subtitle}{fg=MutedText}
+\setbeamercolor{author}{fg=Text}
+\setbeamercolor{institute}{fg=MutedText}
+\setbeamercolor{date}{fg=MutedText}
+\setbeamercolor{itemize item}{fg=Primary}
+\setbeamercolor{itemize subitem}{fg=Accent}
+\setbeamercolor{section in toc}{fg=Text}
+\setbeamercolor{section in toc shaded}{fg=MutedText}
+
+\setbeamerfont{frametitle}{series=\bfseries,size=\large}
+\setbeamerfont{title}{series=\bfseries,size=\LARGE}
+\setbeamerfont{footline}{size=\scriptsize}
+
+\setbeamertemplate{frametitle}{%
+  \vspace{0.18cm}%
+  \insertframetitle\par
+  \vspace{0.10cm}%
+  {\color{RuleColor}\rule{\textwidth}{0.5pt}}%
+}
+
+\setbeamertemplate{footline}{%
+  \leavevmode
+  \hbox{%
+    \begin{beamercolorbox}[wd=.78\paperwidth,ht=2.8ex,dp=1.2ex,leftskip=.75cm]{normal text}%
+      \color{MutedText}\insertshorttitle\enspace |\enspace\insertshortauthor
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.22\paperwidth,ht=2.8ex,dp=1.2ex,rightskip=.75cm plus1fil]{normal text}%
+      \hfill\color{MutedText}\insertframenumber\,/\,\inserttotalframenumber
+    \end{beamercolorbox}%
+  }
+}
+
+\setbeamertemplate{title page}{%
+  \vfill
+  {\color{Primary}\rule{1.2cm}{3pt}\par}
+  \vspace{0.55cm}
+  {\TitleFont\color{Primary}\inserttitle\par}
+  \vspace{0.18cm}
+  {\SubtitleFont\color{MutedText}\insertsubtitle\par}
+  \vspace{0.9cm}
+  {\BodyFont\insertauthor\par}
+  {\SmallFont\color{MutedText}\insertinstitute\par}
+  \vspace{0.35cm}
+  {\SmallFont\color{MutedText}\insertdate\par}
+  \vfill
+}
+
+\setbeamertemplate{section page}{%
+  \vfill
+  {\color{MutedText}\large Chapter \insertsectionnumber\par}
+  \vspace{0.25cm}
+  {\color{Primary}\rule{1.2cm}{3pt}\par}
+  \vspace{0.45cm}
+  {\fontsize{27}{32}\selectfont\bfseries\color{Primary}\insertsectionhead\par}
+  \vfill
+}
+
+\AtBeginSection[]{
+  \begin{frame}[plain,noframenumbering]
+    \sectionpage
+  \end{frame}
+}
+
+\mode<all>

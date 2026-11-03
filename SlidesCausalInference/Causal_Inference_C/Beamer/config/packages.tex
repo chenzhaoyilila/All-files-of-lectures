@@ -1,0 +1,21 @@
+% 通用宏包集中在此处；课程内容文件中通常不应再加载宏包。
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{lmodern}
+\else
+  \usepackage{fontspec}
+  \defaultfontfeatures{Ligatures=TeX}
+\fi
+
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+\usepackage[most]{tcolorbox}
+\usepackage{listings}
+\usepackage{xparse}
+\usepackage{appendixnumberbeamer}
+\usepackage[backend=biber,style=authoryear,maxcitenames=2]{biblatex}

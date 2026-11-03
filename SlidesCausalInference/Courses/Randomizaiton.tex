@@ -1,0 +1,631 @@
+\documentclass[11pt,aspectratio=169]{beamer}
+
+% 直接复用现有主题配置。
+\input{../Causal_Inference_C/Beamer/config/packages}
+\input{../Causal_Inference_C/Beamer/config/colors}
+\input{../Causal_Inference_C/Beamer/config/fonts}
+\input{../Causal_Inference_C/Beamer/config/theme}
+\input{../Causal_Inference_C/Beamer/config/layouts}
+\input{../Causal_Inference_C/Beamer/config/commands}
+
+\addbibresource{iv-references.bib}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Var}{Var}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+\tcbset{coursebox/.append style={colbacktitle=Background}}
+
+% Automatic transition slide for each subsection:
+% large section title above, subsection title below.
+\newcommand{\sectionsubsectionframe}{%
+  \begin{frame}[plain,noframenumbering]
+    \vspace{0.9cm}
+    {\fontsize{30}{36}\selectfont\bfseries\color{Text}%
+      \insertsectionhead\par}
+
+    \vspace{0.45cm}
+    \noindent
+    {\color{Accent}\rule{1.2cm}{1.3pt}}%
+    {\color{RuleColor}\rule{\dimexpr\textwidth-1.2cm\relax}{0.6pt}}
+
+    \vspace{0.45cm}
+    {\fontsize{22}{27}\selectfont\bfseries\color{Text}%
+      \insertsubsectionhead\par}
+    \vfill
+  \end{frame}%
+}
+
+\AtBeginSubsection[]{\sectionsubsectionframe}
+% 课程信息：以后通常只需要修改这里和正文内容。
+\title[Causal Inference]{Causal Inference}
+\subtitle{Instrumental Variables}
+\author[Zhaoyi]{Zhaoyi}
+%\institute[Your University]{Your University}
+\date{\today}
+
+\begin{document}
+
+
+
+
+
+
+
+
+\begin{titleframe}
+
+
+\end{titleframe}
+
+
+\begin{outlineframe}
+
+\end{outlineframe}
+
+
+
+
+
+
+
+
+
+
+\section{Randomized Controlled Trial}
+\begin{frame}
+A Randomized Controlled Trial (RCT) works as follows:
+\begin{enumerate}
+    \item Choose how to randomize (mechanism), e.g.:
+        \begin{itemize}
+            \item Bernoulli trial
+            \item randomized experiment
+            \item Stratified randomized experiment.
+        \end{itemize}
+    \item Pick $n$ units from the target population and observe pre-treatment characteristics $X_i$
+    \item Randomly assign the treatment $\{D_i\}_{i=1}^n$ following the assignment mechanism
+    \item Observe outcomes:$$\{Y_i\}_{i=1}^n \quad \text{with}\quad Y_i=D_iY_i(1)+(1-D_i)Y_i(0)$$
+\end{enumerate}
+
+
+\end{frame}
+
+
+
+\section{Randomization Schemes}
+\subsection{Bernoulli Trials}
+
+\begin{frame}{Unbiasedness: Bernoulli Trial}
+\begin{itemize}
+    \item Consider a simple Bernoulli trial, where each unit is assigned to treatment independently of the others.
+    \item Specifically, suppose treatment is randomized such that, conditional on all potential outcomes $\{Y_i(0), Y_i(1)\}_{i=1}^n$ and the number of treated units $n_1$, each unit has the same probability of receiving treatment:
+    $$\mathbb{E}[D_i \mid \{Y_i(0), Y_i(1)\}_{i=1}^n, n_1] = \frac{n_1}{n}.$$
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Theorem: Unbiasedness under Random Assignment}
+\begin{theorembox}[Unbiasedness under Randomized Assignment]
+Under this framework,
+$$\mathbb{E}\left[\widehat{\tau}_{DM} \mid \{Y_i(0), Y_i(1)\}_{i=1}^n, n_0 > 0, n_1 > 0\right] = \tau_{SATE}.$$
+\end{theorembox}
+That is, $\widehat{\tau}_{DM}$ is an unbiased estimator of the Sample Average Treatment Effect (SATE), even in finite samples.
+\end{frame}
+
+\begin{frame}{Theorem: Asymptotic Distribution of Difference in Means Estimator}
+
+\begin{theorembox}[Theorem: Asymptotic Distribution of Difference in Means Estimator]
+Suppose we are in the framework discussed above. Then,
+$$\sqrt{n}(\widehat{\tau}_{DM} - \tau_{ATE}) \xrightarrow{d} \mathcal{N}(0, V_{DM}), \quad \text{where} \quad V_{DM} = \frac{\text{Var}[Y_i(0)]}{1 - \pi} + \frac{\text{Var}[Y_i(1)]}{\pi}.$$
+
+Furthermore, the plug-in variance estimator
+$$\widehat{V}_{DM} := \frac{n}{n_0^2} \sum_{i:D_i=0} \left(Y_i - \frac{1}{n_0} \sum_{j:D_j=0} Y_j\right)^2 + \frac{n}{n_1^2} \sum_{i:D_i=1} \left(Y_i - \frac{1}{n_1} \sum_{j:D_j=1} Y_j\right)^2$$
+is consistent: $\widehat{V}_{DM} \xrightarrow{p} V_{DM}$.
+\end{theorembox}
+\end{frame}
+
+
+
+
+\begin{frame}{OLS estimator and RCTs}
+
+\begin{itemize}
+    \item Since $D_i$ is independent of $(Y_i(0), Y_i(1))$, $Y_i$ has a linear conditional expectation function:
+    $$\mathbb{E}[Y_i \mid D_i] = \mathbb{E}[D_i Y_i(1) + (1 - D_i)Y_i(0) \mid D_i]$$
+    $$= D_i\mathbb{E}[Y_i(1)] + (1 - D_i)\mathbb{E}[Y_i(0)]$$
+    $$= \mathbb{E}[Y_i(0)] + D_i \times \tau_{ATE}$$
+    \item We can run a linear regression of $Y_i$ on $D_i$ and a constant.
+    \item The coefficient of $D_i$ is an estimator for $\tau_{ATE}$.
+    \item Straightforward calculation shows that this OLS estimator is identical to the difference-in-means estimator.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Fisher's Exact Test: The Lady Tasting Tea}
+\begin{itemize}
+  \item The idea behind Fisher's exact test is often introduced through the famous "lady testing tea" experiment.
+  \item Muriel Bristol claimed that she could distinguish cups in which milk was poured first froms cups in which tea was poured first
+  \item To test this claim, Fisher prepared 8 cups in random order: 4 milk-first cups and 4 tea-first cups.
+  \item After tasting all cups, Bristol was asked to identify the 4 milk-first cups.
+  \item The quesiton: How surprsing would her result be if she were simply guessing?
+\end{itemize}
+
+
+
+\end{frame}
+\begin{frame}
+\begin{itemize}
+    \item Let $\{Y_i(0), Y_i(1)\}_{i=1}^n$ be Bristol's potential answers ($Y_i(d) = 0$ or $1$).
+    \item Fisher's randomization scheme is a Completely Randomized Experiment (CRE).
+    \item We may interpret
+    $$\widehat{\tau}_{DM} = \frac{1}{4} \sum_{i:D_i=1} Y_i - \frac{1}{4} \sum_{i:D_i=0} Y_i = \frac{1}{4}\left(\sum_{i=1}^8 D_i Y_i(1) - \sum_{i=1}^8 (1 - D_i) Y_i(0)\right)$$
+    as a measure of her ability.
+    \item Because there are only $n = 8$ cups and the outcome is binary, the normal approximation is not appropriate.
+\end{itemize}
+
+\end{frame}
+\begin{frame}
+\begin{itemize}
+    \item Consider the sharp null hypothesis
+    $$H_0 : Y_i(1) = Y_i(0), \forall i.$$
+    \item This is the strongest form of the no treatment effect hypothesis, and differs from the hypothesis that the average treatment effect is zero.
+    \item Under $H_0$, $\{Y_i(0), Y_i(1)\}_{i=1}^n$ is known conditional on $\{Y_i\}_{i=1}^n$.
+    \item Thus, conditional on $\{Y_i\}_{i=1}^n$, we can compute the exact distribution
+    $$\widehat{\tau}_{DM} = \frac{1}{4} \sum_{i=1}^n D_i Y_i(1) - \frac{1}{4} \sum_{i=1}^n (1 - D_i) Y_i(0).$$
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+Under
+$$H_0 : \quad \forall i, \quad Y_i(1) = Y_i(0),$$
+we have
+\pause
+\begin{center}
+\begin{tabular}{ccccccccc}
+\hline
+$i$ & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\
+\hline
+$Y_i$ & $Y_1$ & $Y_2$ & $Y_3$ & $Y_4$ & $Y_5$ & $Y_6$ & $Y_7$ & $Y_8$ \\
+$Y_i(1)$ & $Y_1$ & $Y_2$ & $Y_3$ & $Y_4$ & $Y_5$ & $Y_6$ & $Y_7$ & $Y_8$ \\
+$Y_i(0)$ & $Y_1$ & $Y_2$ & $Y_3$ & $Y_4$ & $Y_5$ & $Y_6$ & $Y_7$ & $Y_8$ \\
+$D_i$ & 1 & 0 & 1 & 1 & 0 & 0 & 1 & 0 \\
+\hline
+\end{tabular}
+\end{center}
+
+\begin{itemize}
+    \item Conditional on $\{Y_i\}_{i=1}^n$, $D$ can take $\binom{8}{4} = 70$ different combinations.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Fisher's Exact Test: Test Statistic}
+
+\begin{itemize}
+    \item Under the sharp null hypothesis,
+    $$H_0 : Y_i(1) = Y_i(0) \quad \text{for all } i,$$
+    all potential outcomes are known.
+    \item We can therefore recompute the treatment effect estimate for every possible treatment assignment allowed by the randomization scheme.
+    \item For each assignment, compute the test statistic
+    $$T_n = \frac{\widehat{\tau}_{DM}}{\sqrt{\widehat{V}_{\tau}}}, \quad \text{if } \widehat{V}_{\tau} > 0.$$
+    \item The randomization distribution of $T_n$ is the exact distribution induced by the assignment mechanism under $H_0$.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Fisher's Exact Test: Exact Validity}
+
+\begin{itemize}
+    \item Let $c_{1-\alpha}$ be the $(1-\alpha)$-quantile of the randomization distribution of $|T_n|$ under $H_0$.
+    \item Fisher's exact test rejects when
+    $$|T_n^{obs}| > c_{1-\alpha}.$$
+    \item By construction, the test has conditional level $\alpha$:
+    $$\mathbb{P}\left(|T_n| > c_{1-\alpha} \mid \{Y_i\}_{i=1}^n\right) \le \alpha.$$
+    \item Conditional validity implies unconditional validity by the law of iterated expectations.
+    \item Important: Fisher's exact test requires the sharp null $Y_i(1) = Y_i(0)$ for every unit.
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}{Interpretation of Asymptotics}
+
+From now on, we treat the observed sample as drawn from a large population, rather than adopting Fisher's finite-population framework.
+
+Why Does This Matter?
+\begin{itemize}
+    \item For most statistical methods, this choice does not significantly affect the results.
+    \item This perspective aligns more naturally with real-world data applications.
+    \item It simplifies reasoning about sampling variability.
+\end{itemize}
+
+Both perspectives are valid.
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+\begin{frame}{Short Summary}
+So far we have already know what is the RCT and how to solve the proof.
+
+
+Now I want to present you the detailed assignment mechanism.
+
+In short, we knew the "Bernoulli Trial" in the previous slides. Then we are going to show more formal proofs.
+
+Again, I would like to emphasize the assignment mechanism. It means I should follow such mechanism to determine who is treated and who is in control group. 
+
+Example: \\
+\textbf{Mechanism}: Imagine walking down a line of 100 people. For person A, you flip a coin. For person B, you flip the coin again. Whether person A got the treatment has absolutely zero impact on the odds for person B.
+\end{frame}
+
+\subsection{Stratified Randomized Experiments}
+
+\begin{frame}
+
+\begin{itemize}
+    \item The goal of this course is to move beyond RCTs.
+    \item The simplest way to move beyond one RCT is to consider two RCTs.
+    \item \textbf{Toy Example:} Suppose that we are interested in giving teenagers cash incentives to discourage them from smoking:
+    \begin{itemize}
+        \item[$\blacksquare$] A random subset of teenagers in Berlin, and
+        \item[$\blacksquare$] a random subset of teenagers in Bonn are eligible for the study.
+    \end{itemize}
+    \item Within each city, we have an RCT.
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}{Simpson's Paradox}
+
+Assume that we have the following outcomes:
+
+\begin{center}
+\begin{tabular}{lcc}
+\hline
+Berlin & Non-Smoker & Smoker \\
+\hline
+Treatment & 152 & 5 \\
+Control & 2362 & 122 \\
+\hline
+\end{tabular}
+\quad
+\begin{tabular}{lcc}
+\hline
+Bonn & Non-Smoker & Smoker \\
+\hline
+Treatment & 581 & 350 \\
+Control & 2278 & 1979 \\
+\hline
+\end{tabular}
+\end{center}
+
+$$\widehat{\tau}_{\text{Berlin}} = \frac{5}{152 + 5} - \frac{122}{2362 + 122} \approx -1.7\%, \quad \widehat{\tau}_{\text{Bonn}} = \frac{350}{350 + 581} - \frac{1979}{2278 + 1979} \approx -8.9\%,$$
+
+\begin{center}
+\begin{tabular}{lcc}
+\hline
+Berlin + Bonn & Non-Smoker & Smoker \\
+\hline
+Treatment & 733 & 355 \\
+Control & 4640 & 2101 \\
+\hline
+\end{tabular}
+\pause
+\quad
+$$\widehat{\tau}_{\text{BB}} = \frac{355}{733 + 355} - \frac{2101}{4640 + 2101} \approx 1.5\%$$
+\end{center}
+
+\begin{itemize}
+    \item Within each city, the treatment appears to reduce smoking. However, in the aggregate data, the treatment appears to be harmful $\implies$ \textbf{Simpson's paradox}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Stratified Experiments - Setting}
+
+\begin{itemize}
+    \item Suppose that covariates $X_i$ take values in a discrete space $X_i \in \mathcal{X}$ s.t. $|\mathcal{X}| = p < \infty$.
+    \item Suppose that the treatment assignment is random conditionally on $X_i$ (i.e., we have an RCT in each group defined by a level of $x$):
+    $$(Y_i(0), Y_i(1)) \perp\!\!\!\perp D_i \mid X_i = x, \quad \text{for all } x \in \mathcal{X}.$$
+    \item Consider an estimator of the ATE by aggregating estimates of the CATE:
+    $$\widehat{\tau}_{\text{STRAT}} = \sum_{x \in \mathcal{X}} \frac{n_x}{n} \widehat{\tau}(x), \quad \widehat{\tau}(x) = \frac{1}{n_{x1}} \sum_{\{i : X_i = x, D_i = 1\}} Y_i - \frac{1}{n_{x0}} \sum_{\{i : X_i = x, D_i = 0\}} Y_i$$
+    where $n_x = |\{i : X_i = x\}|$ and $n_{xd} = |\{i : X_i = x, D_i = d\}|$.
+    \item Alternative interpretation: Apply the difference-in-means estimator after stratifying the sample using the covariates $X_i$;
+\end{itemize}
+
+$\implies$ We refer to it as the \emph{stratified estimator}.
+\end{frame}
+
+
+\begin{frame}{Stratified Experiments - Assumptions}
+
+\begin{definitionbox}[Assumption - Superpopulation]
+Suppose that $\{X_i, Y_i(0), Y_i(1), D_i\}_{i=1}^n$ are i.i.d. from some distribution $P$ where $X_i$ takes values in a finite cardinality set $\mathcal{X}$ and $\mathbb{E}[Y_i(d)|X_i] < \infty$ for $d \in \{0, 1\}$.
+\end{definitionbox}
+\begin{definitionbox}[Assumption - Treatment Variation]
+There is non-trivial treatment variation for each $x \in \mathcal{X}$, i.e., writing $e(x) = \mathbb{P}[D_i = 1 \mid X_i = x]$, we have $0 < e(x) < 1$ for all $x$.
+\end{definitionbox}
+\end{frame}
+
+\begin{frame}{Stratified Experiments - Result}
+\begin{theorembox}[Theorem Asymptotic Distribution STRAT]
+Under our assumptions, we have that
+$$\sqrt{n}(\widehat{\tau}_{\text{STRAT}} - \tau_{ATE}) \xrightarrow{d} \mathcal{N}(0, V_{\text{STRAT}}),$$
+$$V_{\text{STRAT}} = \text{Var}[\tau_{CATE}(X_i)] + \mathbb{E}\left[\frac{\sigma_{(1)}^2(X_i)}{e(X_i)} + \frac{\sigma_{(0)}^2(X_i)}{1 - e(X_i)}\right],$$
+$$\text{with } \sigma_{(d)}^2(X_i) = \text{Var}(Y_i(d)|X_i) \text{ for } d \in \{0, 1\}$$
+\end{theorembox}
+The asymptotic variance $V_{\text{STRAT}}$ does not depend on $|\mathcal{X}| = p$, the number of groups, or equivalently the number of "parameters" $\tau(x)$ estimated.
+\end{frame}
+
+
+
+\begin{frame}
+
+
+\end{frame}
+
+
+
+\begin{frame}{Treatment Assignment Level: Clustering}
+\begin{itemize}
+  \item So far, we have assumed assignment occurs at individual level
+  \item Sometimes, random assignment occurs at cluster level {the range is restricted, school, company...}
+  \item Individual assignment is too costly
+  \item Treatment only makes sense at cluster level but outcome is measured at individual level (i.e. Teacher training experiment)
+  \item All three randomization schemes can easily be modified to the cluster level
+  \item For Bernoulli trial and CRE, OLS estimator can be used to estimate ATE and cluster-robust standard errors are advisable.
+
+\end{itemize}
+\end{frame}
+
+\subsection{Predetermined Covariates}
+
+\begin{frame}{Regression Adjustment in Randomized Trials}
+\begin{itemize}
+  \item In RCTs, we often observe additional pre-treatment covariates $X_i$, along with treatment assignment $D_i$ and outcomes $Y_i$
+  \item So researchers often use regressions instead fo relying only on the difference-in-means estimator.
+  \item I use \textbf{interacted regression:} $Y_i \sim \alpha +\tau D_i+X_i^T\beta +D_i\cdot(X_i^T \gamma)$
+  \item Then I try to analyze teh interacted regression estimator $\hat{\tau}_{IREG}$, which:
+  \begin{itemize}
+    \item Allows for transparent modeling of treatment effect heterogeneity.
+    \item Is widely considered best practice in modern causal inference.
+  \end{itemize}
+\end{itemize}
+
+
+
+
+
+\end{frame}
+\begin{frame}{Regression Adjustments in Randomized Trials}
+
+\begin{itemize}
+    \item The ATE can be estimated as the difference in predicted outcomes if everyone were treated versus if no one were treated:
+    $$\widehat{\tau}_{\text{IR}} = \frac{1}{n} \sum_{i=1}^n \left(\widehat{\alpha} + \widehat{\tau} + X_i^\top (\widehat{\beta} + \widehat{\gamma})\right) - \frac{1}{n} \sum_{i=1}^n \left(\widehat{\alpha} + X_i^\top \widehat{\beta}\right) = \widehat{\tau} + \left(\frac{1}{n} \sum_{i=1}^n X_i\right)^\top \widehat{\gamma}.$$
+    \item The interacted regression estimator is algorithmically equivalent to:
+    \begin{enumerate}
+        \item Running separate OLS regressions for treated and control units:
+        $$Y_i \sim \alpha(0) + X_i \cdot \beta(0) \quad \text{for } D_i = 0 \quad \text{and} \quad Y_i \sim \alpha(1) + X_i \cdot \beta(1) \quad \text{for } D_i = 1$$
+        \item computing $\widehat{\tau}_{\text{IREG}} = \widehat{\alpha}(1) - \widehat{\alpha}(0) + \overline{X}^\top (\widehat{\beta}(1) - \widehat{\beta}(0))$
+    \end{enumerate}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Regression Adjustment Under Linearity}
+\begin{itemize}
+    \item We first impose the assumption that the linear model is correctly specified, and that $X_i \in \mathbb{R}$, e.g.,
+    $$Y_i(d) = \alpha(d) + X_i \cdot \beta(d) + \varepsilon_i(d),$$
+    with $\mathbb{E}[\varepsilon_i(d) \mid X_i] = 0, \text{Var}(\varepsilon_i(d) \mid X_i) = \sigma^2$.
+    \item Treatment is assigned via a Bernoulli trial, and observed outcomes are:
+    $$Y_i = Y_i(D_i) = \alpha(0) + D_i(\alpha(1) - \alpha(0)) + X_i \cdot \beta(0) + D_i X_i \cdot (\beta(1) - \beta(0)) + \varepsilon_i,$$
+    with $\mathbb{E}[\varepsilon_i \mid X_i, D_i] = 0, \text{Var}(\varepsilon_i \mid X_i, D_i) = \sigma^2$, and $\pi = 0.5$.
+    \item For simplicity, we assume that $\text{Var}(X_i) = A$ and $\mathbb{E}[X_i] = 0$
+\end{itemize}
+
+\end{frame}
+\begin{frame}{Variance of $\hat{\tau}_{DM}$ and $\tau_{IREG}$ under the Linear Model}
+
+
+
+
+
+\end{frame}
+
+
+\begin{frame}{What if without Linear Causal Effect}
+
+If the causal effect is not linear, we need to change our way of estimating.
+
+For example, we need to use nonparametric estimation...
+
+\end{frame}
+
+
+\begin{frame}
+
+
+
+
+
+\end{frame}
+\begin{frame}{Balancing Checks}
+\begin{itemize}
+  \item Due to randomization of $D_i$, treatment and control groups should, on average, have similar pre-treatment characterstics.
+  \item Test whether treatment status is related to pre-treatment covariates, e.g.$$H_0:\beta_1=0 \quad vs. \quad H_1: \beta_1\neq 0 \quad \text{where} \quad D_i=\beta_0+\beta_1 Z_i+u_i$$
+  \item Only use covariates measured "before treatment" or "unaffected" by treatment
+  \item Balance checks are diagnostic tools, not proof that the randomization was implemented correctly.
+  \item Failure to reject does not verify that randomization was valid, and if we test many covariates,some will appear imbalanced purely by chance.
+  \item In practice, it is useful to report both tests of individual and joint significance and \textbf{standardized mean differences}, which often more informative than raw $p$-values.
+
+\end{itemize}
+
+\end{frame}{}
+\begin{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+\end{frame}
+
+\section{Critique to RCT}
+\begin{frame}{RCTs Are Powerful, But Not Always Sufficient}
+\begin{itemize}
+  \item Randomized controlled trials are the benchmark for causal inference.
+  \item But they do not solve every question.
+  \item Some reasons:
+\begin{enumerate}
+  \item some treatments cannot be randomized,
+  \item experiments may be imperfectly implemented,
+  \item results from one experiment may not carry over to other settings ro larger-scale policies.
+\end{enumerate}
+\item RCTs are extremely valuable, but they are not a complete solution to all empirical questions.
+\end{itemize}
+
+\end{frame}
+\begin{frame}{Some Treatments Cannot Be Randomized}
+\begin{itemize}
+  \item Unethical, illegal, or impractical. Example: we cannot randomly assign individuals to smoke, to experience unemployment, or to receive a recession.
+  \item As a result, many important causal questions cannot be answered with an RCT, and we have to rely on observational methods.
+\end{itemize}
+
+
+
+
+\end{frame}
+\begin{frame}{Two Questions}
+Once an experiment is conducted, we should ask two separate questions:
+\begin{enumerate}
+  \item Can we learn the causal effect of the study population?
+  \item Can we use this result beyond the study population and setting?
+
+\end{enumerate}
+
+These correspond to:
+\begin{itemize}
+  \item Internal validity: is the estimated effect credible for the units actually studied?
+  \item External validity: does this effect generalize to other populations, settings, or policy environments?
+\end{itemize}
+
+\end{frame}
+\begin{frame}{Threats to Internal Validity}
+
+True experiments isolate causality by keeping treatment assignment completely independent of potential outcomes.
+
+
+\begin{itemize}
+  \item Flawed Randomization: The actual assignment deviates from the planned design.
+  \item Non-adherence: Assigned treatment and received treatment do not match.
+  \item Attrition Bias: Data goes missing unevenly across the experimental arms.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{Imperfect Compliance}
+\begin{itemize}
+  \item In some experiments, treatment assignment does not coincide with actual treatment.
+  \item Example: College Tuition Scholarship
+  \begin{itemize}
+    \item Treated individuals are randomly offered a substantial scholarship to attend university.
+    \item Control individuals are not offered the scholarship.
+    \item Some individuals who are offered the scholarship still choose not to enroll in university (e.g., because they decide to enter the workforce immediately).
+    \item Some control individuals still enroll in university by paying out-of-pocket or taking on student debt.
+  \end{itemize}
+\end{itemize}
+  \item Thus, assignment and treatment status differ.
+  \item Also a topic in instrumental variables.
+\end{frame}
+\begin{frame}{External Validity}
+\begin{itemize}
+  \item Even if an experiment is internally valid, its results may not generalize.
+  \item External validity asks whether the estimated effect applies to other populations, settings, or policy environments.
+  \item Example: education intervention in different countries may have a different effect.
+  \item When interpreting experimental evidence, ask:
+  \begin{itemize}
+  \item Who was studied?
+  \item In which setting?
+  \item Would the same effect be plausible elsewhere?
+\end{itemize}
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}{From Small Experiments to Large-Scale Policies}
+\begin{itemize}
+  \item An experiment often measures the effect of a treatment in small and controlled setting.
+  \item This is a partial equilibrium effect: the broader environment is held fixed.
+  \item When a policy is scaled up, prices, behavior, and institutions may adjust.
+  \item In addition, spillovers may arise: one unit's treatment can effect another unit's outcome.
+\end{itemize}
+
+\end{frame}
+
+
+
+\section{Partial Identification}
+
+\begin{frame}
+
+I will only introduce a small part of this chapter, because I will then upload a video to discuss partial identification. Note that I will also mention this definition in the following courses.
+
+\end{frame}
+
+\begin{frame}
+
+
+\end{frame}
+
+\begin{frame}
+
+
+\end{frame}
+
+\begin{frame}
+
+
+\end{frame}
+
+\begin{frame}
+
+
+\end{frame}
+
+\begin{frame}
+
+
+\end{frame}
+
+\begin{frame}
+
+
+\end{frame}
+
+
+
+
+
+\section{Key Takeaways}
+
+\end{document}
+
+
+
+

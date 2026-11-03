@@ -1,0 +1,86 @@
+\documentclass[11pt,aspectratio=169]{beamer}
+
+% 直接复用现有主题配置。
+\input{../Causal_Inference_C/Beamer/config/packages}
+\input{../Causal_Inference_C/Beamer/config/colors}
+\input{../Causal_Inference_C/Beamer/config/fonts}
+\input{../Causal_Inference_C/Beamer/config/theme}
+\input{../Causal_Inference_C/Beamer/config/layouts}
+\input{../Causal_Inference_C/Beamer/config/commands}
+
+\addbibresource{Causal_Inference_C/Beamer/Reference list/bibliography.bib}
+
+% 课程信息：以后通常只需要修改这里和正文内容。
+\title[Causal Inference]{Causal Inference}
+\subtitle{}
+\author[Zhaoyi]{Zhaoyi}
+%\institute[Your University]{Your University}
+\date{\today}
+
+\begin{document}
+
+\begin{titleframe}
+
+
+\end{titleframe}
+
+\begin{outlineframe}
+\begin{itemize}
+    \item Overview of Causal Inference
+    \item Review of Statistics
+    \item Introduction to Causal Inference Methods
+    \item Key Takeaways
+\end{itemize}
+\end{outlineframe}
+
+\begin{frame}{Does ice cream cause shark attacks?}
+\begin{center}
+    \includegraphics[width=0.6\textwidth]{../image.png}
+\end{center}
+
+
+\end{frame}
+
+
+\begin{frame}{We Cannot Infer Causality}
+    It would be absurd to conclude that ice cream sales cause shark attacks. They simply occur at the same time, and other factors---such as temperature and season---affect both.
+
+    In short, these factors are confounders. Correlation is not causation.
+\end{frame}
+
+\begin{frame}{The Fundamental Problem of Causal Inference}
+    To determine the effect of ice cream sales on shark attacks, we would ideally compare the number of shark attacks with and without ice cream sales while holding everything else constant.
+    
+    However, this comparison is impossible for the same unit at the same time: we can never observe both potential outcomes. The counterfactual outcome is always missing.
+\end{frame}
+
+
+
+\begin{frame}{Randomized Controlled Trials}
+    RCT has many good properties
+    \begin{itemize}
+        \item Treatment assignment is controlled by the researcher, eliminating confounding factors (thus removing selection bias). The proofs will be shown later.
+        \item We can clearly see the causal effect theoretically.
+    \end{itemize}
+    I will argue this method with some videos.
+\end{frame}
+
+\begin{frame}{Key Strategies for Identification}
+Common methods include:
+\begin{itemize}
+    \item Instrumental Variables: Use external variation.
+    \item Regression Discontinuity: Investigate the effect at the threshold.
+    \item Difference-in-Differences: Compare changes over time between units.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}{References}
+    \nocite{*}
+    \printbibliography[heading=none]
+\end{frame}
+
+
+
+\end{document}
